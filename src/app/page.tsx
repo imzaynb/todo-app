@@ -12,13 +12,13 @@ export default function Home() {
         <></>
       ) : (
         <main>
-          <div className="">
+          <div className="container mt-4">
             {isSignedIn ? (
               <>
                 <div className="">Welcome {user.firstName}!</div>
               </>
             ) : (
-              <div className="">
+              <div className="leading-7 [&:not(:first-child)]:mt-6">
                 Sign in to create your todo list!
               </div>
             )}
