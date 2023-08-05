@@ -1,4 +1,5 @@
 import { useUser, UserButton, SignInButton, SignUpButton } from "@clerk/nextjs"
+import { Button } from "@/components/ui/button";
 
 const Header = () => {
     const { isSignedIn } = useUser();
@@ -10,9 +11,13 @@ const Header = () => {
                 <UserButton />
             ) : (
                 <div className="">
-                    <SignInButton />
+                    <Button>
+                        <SignInButton />
+                    </Button>
                     {" "}
-                    <SignUpButton />
+                    <Button>
+                        <SignUpButton />
+                    </Button>
                 </div>
             )}
         </header>
