@@ -4,13 +4,42 @@ import supabaseClient from "@/lib/database";
 import { useAuth } from "@clerk/nextjs"
 import { useState } from "react";
 
+import Link from "next/link"
+import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button"
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+
+const formSchema = z.object({
+    todo: z.string().min(2),
+});
+
+
 const AddTodoForm = ({ todos, setTodos }) => {
     const { getToken, userId } = useAuth();
-    const [newTodo, setNewTodo] = useState("");
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (newTodo === "") {
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            todo: "",
+        }
+    })
+
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        const thisTodo = values.todo;
+
+        if (thisTodo === "") {
             return;
         }
 
@@ -20,21 +49,37 @@ const AddTodoForm = ({ todos, setTodos }) => {
         const supabase = await supabaseClient((supabaseAccessToken as string));
         const { data } = await supabase
             .from("todos")
-            .insert({ title: newTodo, user_id: userId })
+            .insert({ title: thisTodo, user_id: userId })
             .select();
 
         // FIXME: is this desired behavior?
         if (data) {
             setTodos([...todos, data[0]]);
         }
-        setNewTodo("");
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input onChange={(e) => setNewTodo(e.target.value)} value={newTodo} />
-            <button>Add Todo</button>
-        </form>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <FormField
+                    control={form.control}
+                    name="todo"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Todo</FormLabel>
+                            <FormControl>
+                                <Input placeholder="cook eggs" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                This is your next todo.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit">Submit</Button>
+            </form>
+        </Form>
     )
 }
 
