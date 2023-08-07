@@ -3,12 +3,13 @@
 import AddTodoForm from '@/components/add-todo-form';
 import Header from '@/components/header';
 import TodoList from '@/components/todo-list';
+import { Todo } from '@/types/todo';
 import { useUser } from '@clerk/nextjs'
 import { useState } from 'react';
 
 export default function Home() {
   const { isSignedIn, isLoaded, user } = useUser();
-  const [todos, setTodos] = useState(null);
+  const [todos, setTodos] = useState<Todo[] | null>(null);
 
   return (
     <>
@@ -17,11 +18,9 @@ export default function Home() {
         <></>
       ) : (
         <main>
-          <div className="container mt-4">
+          <div className="container mt-8">
             {isSignedIn ? (
               <>
-                <div className="">Welcome {user.firstName}!</div>
-                <AddTodoForm todos={todos} setTodos={setTodos} />
                 <TodoList todos={todos} setTodos={setTodos} />
               </>
             ) : (

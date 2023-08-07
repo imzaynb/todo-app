@@ -5,7 +5,27 @@ import { Database } from "@/types/supabase";
 import { useSession } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
-const TodoList = ({ todos, setTodos }) => {
+import { Todo } from "@/types/todo";
+
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+
+import { Button } from "@/components/ui/button"
+import AddTodoDialog from "./add-todo-dialog";
+
+export interface TodoListProps {
+    todos: Todo[] | null,
+    setTodos: (todos: Todo[] | null) => void,
+}
+
+const TodoList = ({ todos, setTodos }: TodoListProps) => {
     const { session } = useSession();
     const [loading, setLoading] = useState(true);
 
@@ -20,8 +40,9 @@ const TodoList = ({ todos, setTodos }) => {
                 const supabase = await supabaseClient((supabaseAccessToken as string));
 
                 const { data: todos } = await supabase.from("todos").select("*");
-
-                setTodos(todos);
+                if (todos) {
+                    setTodos(todos);
+                }
             } catch (e) {
                 alert(e);
             } finally {
@@ -37,14 +58,28 @@ const TodoList = ({ todos, setTodos }) => {
 
     return (
         <>
-            {todos?.length > 0 ? (
-                <div>
-                    <ol>
+            {todos && todos?.length > 0 ? (
+                <Table>
+                    <TableCaption>A list of your todos.</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="">Todo</TableHead>
+                            <TableHead>Time Created</TableHead>
+                            <TableHead className="text-right">
+                                <AddTodoDialog todos={todos} setTodos={setTodos} />
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         {todos.map((todo) => (
-                            <li key={todo.id}>{todo.title}</li>
+                            <TableRow>
+                                <TableCell className="font-medium">{todo?.title}</TableCell>
+                                <TableCell>{todo?.created_at}</TableCell>
+                                <TableCell></TableCell>
+                            </TableRow>
                         ))}
-                    </ol>
-                </div>
+                    </TableBody>
+                </Table>
             ) : (
                 <div>You don't have any todos!</div>
             )}

@@ -2,9 +2,7 @@
 
 import supabaseClient from "@/lib/database";
 import { useAuth } from "@clerk/nextjs"
-import { useState } from "react";
 
-import Link from "next/link"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
@@ -21,12 +19,18 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
+import { Todo } from "@/types/todo";
+
 const formSchema = z.object({
     todo: z.string().min(2),
 });
 
+export interface AddTodoFormProps {
+    todos: Todo[] | null,
+    setTodos: (todos: Todo[] | null) => void,
+}
 
-const AddTodoForm = ({ todos, setTodos }) => {
+const AddTodoForm = ({ todos, setTodos }: AddTodoFormProps) => {
     const { getToken, userId } = useAuth();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -53,7 +57,7 @@ const AddTodoForm = ({ todos, setTodos }) => {
             .select();
 
         // FIXME: is this desired behavior?
-        if (data) {
+        if (todos && data) {
             setTodos([...todos, data[0]]);
         }
     }

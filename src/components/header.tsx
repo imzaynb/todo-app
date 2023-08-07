@@ -8,7 +8,7 @@ const Header = () => {
     return (
         <header className="bg-accent flex py-2 px-5 justify-between align-middle">
             <div className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">My Todo App</div>
-            <div className="flex justify-between space-x-10 items-center">
+            <div className="flex justify-between space-x-3 items-center">
                 <div>
                     <ModeToggle />
                 </div>
